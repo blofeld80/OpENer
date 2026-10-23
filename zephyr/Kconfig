@@ -39,14 +39,6 @@ config OPENER_THREAD_STACK_SIZE
 	default 8192
 	depends on OPENER_AUTOSTART
 
-config OPENER_SAMPLE_APPLICATION
-	bool "Sample application"
-	help
-	  The CIP hooks of OpENer's sample application without non-volatile data: assemblies 100, 150, 151
-	  and one connection point of each kind, the output data mirrored to the input data. For
-	  demonstration and tests; a device provides its own hooks. Uses calloc() and free(): size
-	  COMMON_LIBC_MALLOC_ARENA_SIZE.
-
 config OPENER_TRACE_LEVEL
 	int "Trace level"
 	default 0

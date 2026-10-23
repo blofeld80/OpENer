@@ -44,13 +44,11 @@ The stack's options (device identity for `devicedata.h`, connection counts, trac
 `devicedata.h` of your own: the module generates both from Kconfig, and the stack and the
 application must be compiled with the same configuration.
 
-## Quick start without application code
+## Autostart
 
-`CONFIG_OPENER_AUTOSTART=y` runs the start-up sequence below in a thread of its own, and
-`CONFIG_OPENER_SAMPLE_APPLICATION=y` provides the hooks of OpENer's sample application (assemblies
-100, 150, 151; output mirrored to input). With a static address from `NET_CONFIG_SETTINGS` or
-DHCPv4 that is a running EtherNet/IP adapter. A device turns the sample off and implements the
-hooks itself.
+`CONFIG_OPENER_AUTOSTART=y` runs the start-up sequence below in a thread of its own (static
+address from `NET_CONFIG_SETTINGS`, or DHCPv4). The application still provides the CIP hooks.
+An application that wants to print or do more during start-up runs the sequence itself.
 
 ## What the application provides
 
