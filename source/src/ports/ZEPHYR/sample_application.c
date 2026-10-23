@@ -76,6 +76,13 @@ EipStatus AfterAssemblyDataReceived(CipInstance *instance)
 	return kEipStatusOk;
 }
 
+EipBool8 BeforeAssemblyDataSend(CipInstance *instance)
+{
+	/* nothing to refresh, the output data is mirrored on receive; true: the data is new */
+	(void)instance;
+	return true;
+}
+
 EipStatus ResetDevice(void)
 {
 	CloseAllConnections();

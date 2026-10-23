@@ -11,6 +11,7 @@
 #include <zephyr/sys/byteorder.h>
 
 #include "opener_api.h"
+#include "devicedata.h"
 #include "cipconnectionobject.h"
 #include "cipethernetlink.h"
 #include "ciptcpipinterface.h"
@@ -57,6 +58,11 @@ static void opener_main(void *p1, void *p2, void *p3)
 	CipEthernetLinkSetMac(mac);
 	g_tcpip.config_control = IS_ENABLED(CONFIG_NET_DHCPV4) ? kTcpipCfgCtrlDhcp : kTcpipCfgCtrlStaticIp;
 	GetHostName(&g_tcpip.hostname);
+	/* the network handler binds its sockets to this address */
+	if (IfaceGetConfiguration(NULL, &g_tcpip.interface_configuration) != kEipStatusOk) {
+		LOG_ERR("no interface configuration");
+		return;
+	}
 	if (NetworkHandlerInitialize() != kEipStatusOk) {
 		LOG_ERR("network handler initialisation failed");
 		return;

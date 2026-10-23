@@ -55,7 +55,8 @@ hooks itself.
 ## What the application provides
 
 The CIP hooks of `opener_api.h`: `ApplicationInitialization()`, `HandleApplication()`,
-`CheckIoConnectionEvent()`, `AfterAssemblyDataReceived()`, `RunIdleChanged()`, `ResetDevice()`,
+`CheckIoConnectionEvent()`, `AfterAssemblyDataReceived()`, `BeforeAssemblyDataSend()`,
+`RunIdleChanged()`, `ResetDevice()`,
 `ResetDeviceToInitialConfiguration()`, `CipCalloc()` and `CipFree()`.
 
 The start-up sequence, after the interface is up and has an IPv4 address:
