@@ -1,0 +1,155 @@
+# OpENer as a Zephyr module: the EtherNet/IP adapter stack with a Zephyr port (source/src/ports/ZEPHYR)
+# on the native network API (zsock_*, net_if). The application supplies the CIP hooks
+# (ApplicationInitialization(), HandleApplication(), CheckIoConnectionEvent(), ...), calls
+# CipStackInit() and NetworkHandlerInitialize() and runs NetworkHandlerProcessCyclic() in a thread.
+# See source/src/ports/ZEPHYR/README.md.
+
+menuconfig OPENER
+	bool "OpENer EtherNet/IP adapter stack"
+	depends on NETWORKING && NET_IPV4 && NET_UDP && NET_TCP && NET_SOCKETS
+	depends on NET_CONTEXT_REUSEADDR && NET_CONTEXT_DSCP_ECN && NET_CONTEXT_SNDTIMEO
+	depends on NET_HOSTNAME_ENABLE
+	help
+	  Build the OpENer EtherNet/IP stack. These must be set by the application (they are dependencies, not
+	  selected, because selecting them from here makes a dependency loop in Zephyr's network Kconfig):
+	  NET_IPV4, NET_UDP, NET_TCP, NET_SOCKETS, NET_CONTEXT_REUSEADDR, NET_CONTEXT_DSCP_ECN,
+	  NET_CONTEXT_SNDTIMEO and NET_HOSTNAME_ENABLE. The network resources the stack needs
+	  (NET_MAX_CONTEXTS, packet and buffer counts, ZVFS_POLL_MAX) are sized by the application: it opens
+	  3 listeners (TCP and UDP 44818 unicast, UDP 44818 broadcast), UDP 2222 for I/O and one TCP socket
+	  per encapsulation session.
+
+if OPENER
+
+config OPENER_TRACE_LEVEL
+	int "Trace level"
+	default 0
+	range 0 15
+	help
+	  Bit mask of OPENER_TRACE_LEVEL_*: 1 error, 2 warning, 4 state, 8 info. 0 builds the stack without
+	  traces. Traces are printed with fprintf(stderr), that is on the console.
+
+config OPENER_ETHERNET_BUFFER_SIZE
+	int "Ethernet message buffer size"
+	default 512
+	help
+	  Bytes of the buffer used for every received message and for the reply to an explicit message, and
+	  by I/O connections for the produced data.
+
+config OPENER_CONSUMED_DATA_HAS_RUN_IDLE_HEADER
+	bool "Consumed data carries a run/idle header"
+	default y
+
+config OPENER_PRODUCED_DATA_HAS_RUN_IDLE_HEADER
+	bool "Produced data carries a run/idle header"
+
+config OPENER_RANDOMIZE_CONNECTION_ID
+	bool "Randomize the lower 16 bits of connection IDs too"
+
+menu "Device identity (devicedata.h)"
+
+config OPENER_DEVICE_VENDOR_ID
+	int "Vendor ID"
+	default 1
+
+config OPENER_DEVICE_TYPE
+	int "Device type"
+	default 12
+
+config OPENER_DEVICE_PRODUCT_CODE
+	int "Product code"
+	default 65001
+
+config OPENER_DEVICE_MAJOR_REVISION
+	int "Major revision"
+	default 2
+
+config OPENER_DEVICE_MINOR_REVISION
+	int "Minor revision"
+	default 3
+
+config OPENER_DEVICE_NAME
+	string "Product name"
+	default "OpENer"
+
+endmenu
+
+menu "CIP objects and connections (opener_user_conf.h)"
+
+config OPENER_CIP_FILE_OBJECT
+	bool "File object"
+
+config OPENER_CIP_SECURITY_OBJECTS
+	bool "Security objects"
+
+config OPENER_IS_DLR_DEVICE
+	bool "Basic DLR device"
+	help
+	  Also enables a settable TCP/IP interface configuration and the Ethernet Link label, counters and
+	  interface control, and sets the number of Ethernet Link instances to 3.
+
+config OPENER_TCPIP_IFACE_CFG_SETTABLE
+	bool "TCP/IP interface configuration is settable"
+	depends on !OPENER_IS_DLR_DEVICE
+
+config OPENER_ETHLINK_INSTANCE_CNT
+	int "Number of Ethernet Link instances"
+	default 1
+	range 1 3
+	depends on !OPENER_IS_DLR_DEVICE
+
+config OPENER_ETHLINK_LABEL_ENABLE
+	bool "Ethernet Link interface label"
+	depends on !OPENER_IS_DLR_DEVICE
+
+config OPENER_ETHLINK_CNTRS_ENABLE
+	bool "Ethernet Link counters"
+	depends on !OPENER_IS_DLR_DEVICE
+
+config OPENER_ETHLINK_IFACE_CTRL_ENABLE
+	bool "Ethernet Link interface control"
+	depends on !OPENER_IS_DLR_DEVICE
+
+config OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS
+	int "Application objects that may be used in connections"
+	default 1
+
+config OPENER_CIP_NUM_EXPLICIT_CONNS
+	int "Explicit connections"
+	default 6
+	help
+	  ODVA PUB 70 asks for at least 6.
+
+config OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS
+	int "Exclusive owner connections"
+	default 1
+
+config OPENER_CIP_NUM_INPUT_ONLY_CONNS
+	int "Input only connections"
+	default 1
+
+config OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH
+	int "Input only connections per connection path"
+	default 3
+
+config OPENER_CIP_NUM_LISTEN_ONLY_CONNS
+	int "Listen only connections"
+	default 1
+
+config OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
+	int "Listen only connections per connection path"
+	default 3
+
+config OPENER_NUMBER_OF_SUPPORTED_SESSIONS
+	int "Encapsulation sessions handled at the same time"
+	default 20
+
+config OPENER_TIMER_TICK_MS
+	int "Timer tick in ms"
+	default 10
+	range 1 100
+	help
+	  Time base for time-outs and production timers; the shortest RPI the device allows is a multiple.
+
+endmenu
+
+endif # OPENER

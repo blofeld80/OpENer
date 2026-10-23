@@ -1,0 +1,4 @@
+name: opener
+build:
+  cmake: zephyr
+  kconfig: zephyr/Kconfig

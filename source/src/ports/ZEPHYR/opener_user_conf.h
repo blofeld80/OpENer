@@ -1,0 +1,59 @@
+/*
+ * OpENer configuration of the Zephyr port: every value comes from Kconfig (CONFIG_OPENER_*, see
+ * zephyr/Kconfig). The application must not provide an opener_user_conf.h of its own: the stack and
+ * the application have to be compiled with the same configuration.
+ */
+#ifndef OPENER_USER_CONF_H_
+#define OPENER_USER_CONF_H_
+
+#include <assert.h>
+
+#include <zephyr/sys/util.h>
+
+#include "platform_network_includes.h"
+#include "typedefs.h"
+
+#define CIP_FILE_OBJECT      IS_ENABLED(CONFIG_OPENER_CIP_FILE_OBJECT)
+#define CIP_SECURITY_OBJECTS IS_ENABLED(CONFIG_OPENER_CIP_SECURITY_OBJECTS)
+
+#define OPENER_IS_DLR_DEVICE IS_ENABLED(CONFIG_OPENER_IS_DLR_DEVICE)
+
+#if OPENER_IS_DLR_DEVICE
+/* everything a DLR device depends on */
+#define OPENER_TCPIP_IFACE_CFG_SETTABLE  1
+#define OPENER_ETHLINK_CNTRS_ENABLE      1
+#define OPENER_ETHLINK_IFACE_CTRL_ENABLE 1
+#define OPENER_ETHLINK_LABEL_ENABLE      1
+#define OPENER_ETHLINK_INSTANCE_CNT      3
+#else
+#define OPENER_TCPIP_IFACE_CFG_SETTABLE  IS_ENABLED(CONFIG_OPENER_TCPIP_IFACE_CFG_SETTABLE)
+#define OPENER_ETHLINK_CNTRS_ENABLE      IS_ENABLED(CONFIG_OPENER_ETHLINK_CNTRS_ENABLE)
+#define OPENER_ETHLINK_IFACE_CTRL_ENABLE IS_ENABLED(CONFIG_OPENER_ETHLINK_IFACE_CTRL_ENABLE)
+#define OPENER_ETHLINK_LABEL_ENABLE      IS_ENABLED(CONFIG_OPENER_ETHLINK_LABEL_ENABLE)
+#define OPENER_ETHLINK_INSTANCE_CNT      CONFIG_OPENER_ETHLINK_INSTANCE_CNT
+#endif
+
+#define OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS                                    \
+	CONFIG_OPENER_CIP_NUM_APPLICATION_SPECIFIC_CONNECTABLE_OBJECTS
+#define OPENER_CIP_NUM_EXPLICIT_CONNS                 CONFIG_OPENER_CIP_NUM_EXPLICIT_CONNS
+#define OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS           CONFIG_OPENER_CIP_NUM_EXLUSIVE_OWNER_CONNS
+#define OPENER_CIP_NUM_INPUT_ONLY_CONNS               CONFIG_OPENER_CIP_NUM_INPUT_ONLY_CONNS
+#define OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH                                               \
+	CONFIG_OPENER_CIP_NUM_INPUT_ONLY_CONNS_PER_CON_PATH
+#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS              CONFIG_OPENER_CIP_NUM_LISTEN_ONLY_CONNS
+#define OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH                                              \
+	CONFIG_OPENER_CIP_NUM_LISTEN_ONLY_CONNS_PER_CON_PATH
+
+#define OPENER_NUMBER_OF_SUPPORTED_SESSIONS CONFIG_OPENER_NUMBER_OF_SUPPORTED_SESSIONS
+
+/* time base for time-outs and production timers */
+static const MilliSeconds kOpenerTimerTickInMilliSeconds = CONFIG_OPENER_TIMER_TICK_MS;
+
+#ifdef OPENER_WITH_TRACES
+#include <stdio.h>
+#define LOG_TRACE(...) fprintf(stderr, __VA_ARGS__)
+#endif
+
+#define OPENER_ASSERT(assertion) assert(assertion)
+
+#endif /* OPENER_USER_CONF_H_ */
