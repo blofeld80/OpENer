@@ -72,6 +72,13 @@ zephyr_library_sources(
   ${OPENER_PORT}/networkconfig.c
   ${OPENER_PORT}/networkhandler.c)
 
+if(CONFIG_OPENER_AUTOSTART)
+  zephyr_library_sources(${OPENER_PORT}/opener_zephyr.c)
+endif()
+if(CONFIG_OPENER_SAMPLE_APPLICATION)
+  zephyr_library_sources(${OPENER_PORT}/sample_application.c)
+endif()
+
 # endianconv.c includes <netinet/in.h> and <sys/socket.h>; both lead to the native mapping. Only
 # the stack is compiled with this directory on its include path.
 zephyr_library_include_directories(${OPENER_PORT}/compat)

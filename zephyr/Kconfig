@@ -20,6 +20,33 @@ menuconfig OPENER
 
 if OPENER
 
+config OPENER_AUTOSTART
+	bool "Start the stack in its own thread"
+	help
+	  A thread waits for the link and an IPv4 address (static through NET_CONFIG_SETTINGS, or DHCPv4),
+	  initialises the CIP stack and runs the network handler. Off: the application does this, see
+	  source/src/ports/ZEPHYR/README.md. Needs ENTROPY_GENERATOR or another random source.
+
+config OPENER_THREAD_PRIORITY
+	int "Priority of the OpENer thread"
+	default 5
+	depends on OPENER_AUTOSTART
+	help
+	  Preemptible priority. The network stack's RX/TX threads are cooperative and run first.
+
+config OPENER_THREAD_STACK_SIZE
+	int "Stack size of the OpENer thread"
+	default 8192
+	depends on OPENER_AUTOSTART
+
+config OPENER_SAMPLE_APPLICATION
+	bool "Sample application"
+	help
+	  The CIP hooks of OpENer's sample application without non-volatile data: assemblies 100, 150, 151
+	  and one connection point of each kind, the output data mirrored to the input data. For
+	  demonstration and tests; a device provides its own hooks. Uses calloc() and free(): size
+	  COMMON_LIBC_MALLOC_ARENA_SIZE.
+
 config OPENER_TRACE_LEVEL
 	int "Trace level"
 	default 0
